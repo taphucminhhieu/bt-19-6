@@ -1,275 +1,304 @@
-class Product:
-    def __init__(self, id, name, price, quantity_sold, discount):
+class Employee:
+    def __init__(self, id, name, salary_day, work_days, allowance):
         self.id = id
         self.name = name
-        self.price = price
-        self.quantity_sold = quantity_sold
-        self.discount = discount
+        self.salary_day = salary_day
+        self.work_days = work_days
+        self.allowance = allowance
 
-        self.total_revenue = 0
-        self.revenue_type = ""
+        self.total_income = 0
+        self.income_type = ""
 
-        self.calculate_revenue()
-        self.classify_revenue()
+        self.calculate_income()
+        self.classify_income()
 
-    def calculate_revenue(self):
-        total = self.price * self.quantity_sold - self.discount
-        if total < 0:
-            total = 0
+    # Tính tổng thu nhập
+    def calculate_income(self):
+        self.total_income = (self.salary_day * self.work_days) + self.allowance
 
-        self.total_revenue = total
-
-    def classify_revenue(self):
-        if self.total_revenue < 5000000:
-            self.revenue_type = 'Thấp'
-        elif self.total_revenue < 20000000:
-            self.revenue_type = 'Trung bình'
-        elif self.total_revenue < 50000000:
-            self.revenue_type = 'Khá'
+    # Phân loại thu nhập
+    def classify_income(self):
+        if self.total_income < 9000000:
+            self.income_type = "Thấp"
+        elif self.total_income < 15000000:
+            self.income_type = "Trung bình"
+        elif self.total_income < 30000000:
+            self.income_type = "Khá"
         else:
-            self.revenue_type = 'Cao'
+            self.income_type = "Cao"
+        return self.income_type
 
 
-class ProductManager:
+class EmployeeManager:
     def __init__(self):
-        self.products = []
+        self.employees = []
 
-    def check_duplicate_id(self, id):
-        for product in self.products:
-            if product.id == id:
-                return product
+    # Tìm mã nhân viên
+    def find_id(self, id):
+        for employee in self.employees:
+            if employee.id == id:
+                return employee
         return None
 
-    def add_product(self):
-        print('--- THÊM SẢN PHẨM ---')
-        while True:
-            new_id = input('Nhập mã sản phẩm: ').strip().upper()
-
-            if not new_id:
-                print('Mã sản phẩm không được để trống')
-                continue
-
-            if self.check_duplicate_id(new_id):
-                print('Mã đã tồn tại! Hãy thử mã khác!')
-                continue
-
-            break
-
-        while True:
-            new_name = input('Nhập tên sản phẩm: ').strip()
-
-            if not new_name:
-                print("Tên sản phẩm không được để trống!")
-                continue
-
-            break
-
-        new_price = input_float('Nhập giá bán: ')
-
-        new_quantity = input_int('Nhập số lượng đã bán: ')
-
-        new_discount = input_float('Nhập giảm giá: ')
-
-        product = Product(new_id, new_name, new_price,
-                          new_quantity, new_discount)
-
-        self.products.append(product)
-
-        print('Thêm sản phẩm thành công.')
-
+    # Hiển thị danh sách
     def show_all(self):
-        if not self.products:
-            print('Danh sách sản phẩm đang rỗng!')
-        else:
-            show_row_one()
-            for product in self.products:
-                print(f'{product.id:<12} | {product.name:<20} | {product.price:<10,.0f} | {product.quantity_sold:<15} | {product.discount:<10,.0f} | {product.total_revenue:<15,.0f} | {product.revenue_type:<14} |')
-                print('-' * 120)
+        print("\n===== DANH SÁCH NHÂN VIÊN =====")
 
-    def update_product(self):
-        update_id = input("Nhập mã sản phẩm cần cập nhật: ").strip().upper()
-
-        product = self.check_duplicate_id(update_id)
-
-        if not product:
-            print("Không tìm thấy sản phẩm cần cập nhật!")
+        if not self.employees:
+            print("Danh sách nhân viên trống")
             return
 
-        product.price = input_float('Cập nhật giá bán: ')
+        print("-" * 110)
+        print(f'{"Mã NV":<12} | {"Họ tên":<20} | {"Lương ngày":<12} | {"Ngày công":<12} | {"Phụ cấp":<12} | {"Tổng thu nhập":<15} | {"Loại thu nhập":<14} |')
+        print("-" * 110)
 
-        product.quantity = input_int('Cập nhật số lượng đã bán: ')
+        for employee in self.employees:
+            print(print(f'{employee.id:<12} | {employee.name:<20} | {employee.salary_day:<12,.0f} | {employee.work_days:<12} | {employee.allowance:<12,.0f} | {employee.total_income:<15,.0f} | {employee.income_type:<14} |'))
 
-        product.discount = input_float('Cập nhật giảm giá: ')
+    # Thêm nhân viên
+    def add_employee(self):
 
-        product.calculate_revenue()
-        product.classify_revenue()
+        while True:
+            input_id = input("Nhập mã nhân viên: ").strip().upper()
 
-        print("Cập nhật sản phẩm thành công!")
+            if input_id == "":
+                print("Mã nhân viên không được để trống")
+                continue
 
-    def delete_product(self):
-        remove_id = input("NHập mã sản phẩm cần xóa: ").strip().upper()
+            if self.find_id(input_id):
+                print("Mã nhân viên đã tồn tại")
+                continue
 
-        product = self.check_duplicate_id(remove_id)
+            break
 
-        if not product:
-            print("Không tìm thấy sản phẩm cần xóa")
-            return
+        while True:
+            try:
+                input_name = input("Nhập họ tên: ").strip().title()
 
-        confirm = input(
-            "Bạn có chắc chắn muốn xóa sản phẩm này không? (Y/N): ").strip().lower()
+                if input_name == "":
+                    print("Tên không được để trống")
+                    continue
 
-        if confirm == 'y':
-            self.products.remove(product)
-            print("Xóa sản phẩm thành công!")
+                input_salary_day = int(input("Nhập lương ngày: ").strip())
+                input_work_days = int(input("Nhập số ngày công: ").strip())
+                input_allowance = int(input("Nhập phụ cấp: ").strip())
 
-        elif confirm == 'n':
-            print("Đã hủy thao tác xóa!")
+                if input_salary_day < 0:
+                    print("Lương ngày phải >= 0")
+                    continue
 
-        else:
-            print("Lựa chọn không hợp lệ!")
+                if input_allowance < 0:
+                    print("Phụ cấp phải >= 0")
+                    continue
 
-    def search_product(self):
-        search_name = input("Nhập từ khóa tìm kiếm: ").strip()
+                if input_work_days < 0 or input_work_days > 31:
+                    print("Ngày công phải từ 0 -> 31")
+                    continue
+
+                employee = Employee(
+                    input_id,
+                    input_name,
+                    input_salary_day,
+                    input_work_days,
+                    input_allowance
+                )
+
+                self.employees.append(employee)
+
+                print("Thêm nhân viên thành công")
+                break
+
+            except ValueError:
+                print("Dữ liệu không hợp lệ")
+
+    # Cập nhật nhân viên
+    def update_employee(self):
+
+        while True:
+            find_id_input = input(
+                "Nhập mã nhân viên cần cập nhật: "
+            ).strip().upper()
+
+            employee = self.find_id(find_id_input)
+
+            if not employee:
+                print("Không tìm thấy nhân viên")
+                continue
+
+            break
+
+        while True:
+            try:
+                input_salary_day = int(input("Nhập lương ngày mới: "))
+
+                input_work_days = int(input("Nhập ngày công mới: "))
+
+                input_allowance = int(input("Nhập phụ cấp mới: "))
+
+                if input_salary_day < 0:
+                    print("Lương ngày phải >= 0")
+                    continue
+
+                if input_allowance < 0:
+                    print("Phụ cấp phải >= 0")
+                    continue
+
+                if input_work_days < 0 or input_work_days > 31:
+                    print("Ngày công phải từ 0 -> 31")
+                    continue
+
+                employee.salary_day = input_salary_day
+                employee.work_days = input_work_days
+                employee.allowance = input_allowance
+
+                employee.calculate_income()
+                employee.classify_income()
+
+                print("Cập nhật thành công")
+                break
+
+            except ValueError:
+                print("Dữ liệu không hợp lệ")
+
+    # Xóa nhân viên
+    def delete_employee(self):
+
+        while True:
+            find_id_input = input(
+                "Nhập mã nhân viên cần xóa: ").strip().upper()
+
+            employee = self.find_id(find_id_input)
+
+            if not employee:
+                print("Không tìm thấy nhân viên")
+                continue
+
+            break
+
+        while True:
+            choice = input(
+                "Bạn có chắc muốn xóa nhân viên này không? (Y/N): ").strip().upper()
+
+            if choice == "Y":
+                self.employees.remove(employee)
+                print("Xóa thành công")
+                break
+
+            elif choice == "N":
+                print("Hủy thao tác")
+                break
+
+            else:
+                print("Lựa chọn không hợp lệ")
+
+    # Tìm kiếm nhân viên
+    def search_employee(self):
+        keyword = input("Nhập tên cần tìm: ").strip().lower()
 
         result = []
 
-        for product in self.products:
-            if search_name in product.name.lower():
-                result.append(product)
+        for employee in self.employees:
+            if keyword in employee.name.lower():
+                result.append(employee)
 
         if not result:
-            print("Không tìm thấy sản phẩm phù hợp!")
+            print("Không tìm thấy nhân viên phù hợp")
             return
 
-        show_row_one()
-        for product in result:
-            print(f'{product.id:<12} | {product.name:<20} | {product.price:<10,.0f} | {product.quantity_sold:<15} | {product.discount:<10,.0f} | {product.total_revenue:<15,.0f} | {product.revenue_type:<14} |')
-            print('-' * 120)
+        print("-" * 110)
 
+        for employee in result:
+            print(f'{employee.id:<12} | {employee.name:<20} | {employee.salary_day:<12,.0f} | {employee.work_days:<12} | {employee.allowance:<12,.0f} | {employee.total_income:<15,.0f} | {employee.income_type:<14} |')
+
+    # Thống kê
     def statistics(self):
-        if not self.products:
-            print('Chưa có dữ liệu để thống kê')
 
-        else:
-            count_thap = 0
-            count_tb = 0
-            count_kha = 0
-            count_cao = 0
+        if not self.employees:
+            print("Danh sách trống")
+            return
 
-            for product in self.products:
-                if product.revenue_type == 'Thấp':
-                    count_thap += 1
-                elif product.revenue_type == 'Trung bình':
-                    count_tb += 1
-                elif product.revenue_type == 'Khá':
-                    count_kha += 1
-                else:
-                    count_cao += 1
+        count_thap = 0
+        count_tb = 0
+        count_kha = 0
+        count_cao = 0
 
-            print("-" * 55)
-            print("             --- THỐNG KÊ ---")
-            print("-" * 55)
-            print(f"{'Phân loại doanh thu':<25} | {'Số lượng sản phẩm':<20} |")
-            print("-" * 55)
-            print(f'{'Thấp':<25} | {count_thap:<20} |')
-            print("-" * 55)
-            print(f'{'Trung bình':<25} | {count_tb:<20} |')
-            print("-" * 55)
-            print(f'{'Khá':<25} | {count_kha:<20} |')
-            print("-" * 55)
-            print(f'{'Cao':<25} | {count_cao:<20} |')
-            print('-'*55)
+        for employee in self.employees:
+            if employee.income_type == "Thấp":
+                count_thap += 1
+            elif employee.income_type == "Trung bình":
+                count_tb += 1
+            elif employee.income_type == "Khá":
+                count_kha += 1
+            else:
+                count_cao += 1
 
-
-def input_float(prompt, min_value=0):
-    while True:
-        try:
-            value = float(input(prompt))
-
-            if value < min_value:
-                print(f'Giá trị phải >= {min_value}')
-                continue
-
-            return value
-
-        except ValueError:
-            print('Vui lòng nhập số hợp lệ')
-
-
-def input_int(prompt, min_value=0, max_value=10000):
-    while True:
-        try:
-            value = int(input(prompt))
-
-            if value < min_value or value > max_value:
-                print(f'Giá trị phải từ {min_value} đến {max_value}')
-                continue
-
-            return value
-
-        except ValueError:
-            print("Vui lòng nhập số hợp lệ")
-
-
-def show_row_one():
-    print('-' * 120)
-    print(f'{'Mã sản phẩm':<12} | {'Tên sản phẩm':<20} | {'Giá bán':<10} | {'Số lượng đã bán':<15} | {'Giảm giá':<10} | {'Tổng doanh thu':<15} | {'Loại danh thu':<14} |')
-    print('-' * 120)
+        print("===== THỐNG KÊ =====")
+        print(f"Thấp       : {count_thap}")
+        print(f"Trung bình : {count_tb}")
+        print(f"Khá        : {count_kha}")
+        print(f"Cao        : {count_cao}")
 
 
 def show_menu():
-    print(""" 
+    print("""
 ================ MENU ================
-1. Hiển thị danh sách sản phẩm
-2. Thêm sản phẩm mới
-3. Cập nhật sản phẩm
-4. Xóa sản phẩm
-5. Tìm kiếm sản phẩm
-6. Thống kê doanh thu
+1. Hiển thị danh sách nhân viên
+2. Thêm nhân viên mới
+3. Cập nhật nhân viên
+4. Xóa nhân viên
+5. Tìm kiếm nhân viên
+6. Thống kê thu nhập
 7. Thoát
-=====================================
- """)
+======================================
+""")
 
 
 def main():
-    manager = ProductManager()
 
-    manager.products.extend([
-        Product("SP001", "Laptop Dell", 15000000, 3, 2000000),
-        Product("SP002", "Chuột Logitech", 350000, 20, 500000),
-        Product("SP003", "Bàn phím cơ AKKO", 1200000, 10, 1000000),
-        Product("SP004", "Màn hình Samsung", 4500000, 5, 0),
-        Product("SP005", "Tai nghe Sony", 2500000, 1, 0)
+    manager = EmployeeManager()
+
+    manager.employees.extend([
+        Employee("NV001", "Nguyen Van A", 500000, 26, 1000000),
+        Employee("NV002", "Tran Van B", 400000, 25, 500000),
+        Employee("NV003", "Le Thi C", 700000, 28, 2000000)
     ])
 
     while True:
+
         show_menu()
-        choice = input('Nhập lựa chọn của bạn: ').strip()
 
-        if choice == "1":
-            manager.show_all()
+        choice = input(
+            "Nhập lựa chọn của bạn: "
+        ).strip()
 
-        elif choice == "2":
-            manager.add_product()
+        match choice:
 
-        elif choice == "3":
-            manager.update_product()
+            case "1":
+                manager.show_all()
 
-        elif choice == "4":
-            manager.delete_product()
+            case "2":
+                manager.add_employee()
 
-        elif choice == "5":
-            manager.search_product()
+            case "3":
+                manager.update_employee()
 
-        elif choice == "6":
-            manager.statistics()
+            case "4":
+                manager.delete_employee()
 
-        elif choice == "7":
-            print("Cảm ơn bạn đã sử dụng hệ thống quản lý sản phẩm!")
-            break
+            case "5":
+                manager.search_employee()
 
-        else:
-            print("Lựa chọn không hợp lệ!")
+            case "6":
+                manager.statistics()
+
+            case "7":
+                print(
+                    "Cảm ơn bạn đã sử dụng hệ thống quản lý nhân sự!"
+                )
+                break
+
+            case _:
+                print("Lựa chọn không hợp lệ")
 
 
 if __name__ == "__main__":
